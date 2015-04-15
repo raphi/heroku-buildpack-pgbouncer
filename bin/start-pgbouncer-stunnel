@@ -67,6 +67,7 @@ config-gen() {
   # Generate config files
   at config-gen-start
   source bin/gen-pgbouncer-conf.sh
+  source bin/gen-twemproxy-conf.sh
   at config-gen-end
 
   # Overwrite config vars with pgbouncer targets
@@ -75,6 +76,15 @@ config-gen() {
   for POSTGRES_URL in $POSTGRES_URLS; do
     at "config-gen-override $POSTGRES_URL"
     eval "$POSTGRES_URL=\$${POSTGRES_URL}_PGBOUNCER"
+  done
+
+  # Overwrite config vars with twemproxy targets
+  # FIXME this actually does not work... same for PG vars
+  REDIS_URLS=${TWEMPROXY_URLS:-REDIS_DB_URL}
+
+  for REDIS_URL in $REDIS_URLS; do
+    at "config-gen-override $REDIS_URL"
+    eval "$REDIS_URL=\$${REDIS_URL}_TWEMPROXY"
   done
 }
 
